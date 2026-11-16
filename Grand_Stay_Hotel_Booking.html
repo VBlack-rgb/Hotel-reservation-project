@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grand Stay – Hotel Bookings</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#faf5ee;--card:#fffdf9;--text:#2b2118;--muted:#7a6a5c;--brand:#c4562f;--teal:#1f6f6b;--ok:#2f8f5b;--bad:#c0392b;--warn:#b7791f;--line:#eadfce;--soft:#f4ebdd}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1713;--card:#271f19;--text:#f3e9dc;--muted:#b3a291;--brand:#e47b52;--teal:#4fb3ac;--ok:#5cc58a;--bad:#ff7a6b;--warn:#e9b44c;--line:#3b3027;--soft:#322820}}
+:root[data-theme="dark"]{--bg:#1c1713;--card:#271f19;--text:#f3e9dc;--muted:#b3a291;--brand:#e47b52;--teal:#4fb3ac;--ok:#5cc58a;--bad:#ff7a6b;--warn:#e9b44c;--line:#3b3027;--soft:#322820}
+*,*:before,*:after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+h1,h2,.serif{font-family:Fraunces,Georgia,"Times New Roman",serif;font-weight:600;margin:0}
+/* login */
+#login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.lhero{background:linear-gradient(160deg,#c4562f,#8c3a1e 60%,#1f6f6b);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px}
+.lhero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1}.lhero p{margin:0;opacity:.9;max-width:34ch}
+.lform{display:grid;place-items:center;padding:28px}
+.lbox{width:100%;max-width:340px;display:grid;gap:14px}
+.lbox h2{font-size:1.6rem}
+.hint{color:var(--muted);font-size:.84rem;margin:0}.err{color:var(--bad);min-height:1.3em;margin:0;font-size:.9rem}
+@media(max-width:760px){#login{grid-template-columns:1fr}.lhero{padding:32px 24px;min-height:200px}}
+/* shell */
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--card)}
+.brand{font-size:1.25rem;color:var(--brand)}
+.who{display:flex;align-items:center;gap:10px;font-size:.9rem}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:.85rem;flex:none}
+main{max-width:1080px;margin:0 auto;padding:22px;display:grid;gap:22px}
+.hero h1{font-size:clamp(1.7rem,4vw,2.4rem)}
+.hero p{color:var(--muted);margin:6px 0 16px;font-size:1.02rem}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{background:var(--soft);border-radius:12px;padding:10px 16px;min-width:130px}
+.chip b{display:block;font-size:1.35rem;font-family:Fraunces,Georgia,serif}.chip span{font-size:.8rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:start}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
+.panel h2{font-size:1.25rem;margin-bottom:4px}.sub{color:var(--muted);font-size:.88rem;margin:0 0 14px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+/* rooms */
+.ctl{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.ctl>div{flex:1;min-width:140px}
+.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:12px}
+.room{border:1px solid var(--line);border-left:5px solid var(--teal);border-radius:12px;padding:12px;background:var(--bg);text-align:left;color:var(--text);font:inherit;display:flex;flex-direction:column;gap:2px}
+.room.Deluxe{border-left-color:var(--warn)}.room.Suite{border-left-color:var(--brand)}
+.room.free{cursor:pointer}.room.free:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.08)}
+.room .no{font-family:Fraunces,Georgia,serif;font-size:1.5rem}.room small{color:var(--muted)}
+.st{font-size:.78rem;font-weight:700;margin-top:4px}.st:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:currentColor}
+.st.f{color:var(--ok)}.st.b{color:var(--bad)}
+/* forms */
+label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px;font-weight:500}
+input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit}
+input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px}
+.fg{display:grid;gap:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{cursor:pointer;border:0;border-radius:10px;padding:11px 18px;font:inherit;font-weight:700;color:#fff;background:var(--brand)}
+button:hover{filter:brightness(1.08)}button:disabled{opacity:.5;cursor:not-allowed}
+button.sm{padding:6px 12px;font-size:.82rem}button.ok{background:var(--ok)}button.no{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+button.line{background:transparent;color:var(--text);border:1px solid var(--line)}
+.quote{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:.9rem;min-height:2.6em;margin:0}
+.seg{display:flex;gap:6px}.seg button{background:transparent;color:var(--muted);border:1px solid var(--line);padding:5px 12px;font-size:.82rem}.seg button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+/* bookings */
+.item{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.item:first-child{border-top:0}.item .mid{flex:1;min-width:200px}.item .nm{font-weight:700}.item .meta{color:var(--muted);font-size:.86rem}
+.pill{font-size:.74rem;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid currentColor}
+.ACTIVE{color:var(--warn)}.CANCELLED{color:var(--bad)}.CHECKED-OUT{color:var(--ok)}
+.amt{font-weight:700;min-width:90px;text-align:right}
+.empty{color:var(--muted);text-align:center;padding:26px 0}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:11px 20px;border-radius:99px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:92%;text-align:center}
+#toast.show{opacity:1}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--text);max-width:360px;width:92%;padding:24px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.bill div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted var(--line)}
+.bill .t{border-bottom:0;border-top:2px solid var(--text);margin-top:8px;padding-top:10px;font-weight:700;font-size:1.1rem}
+/* v4: graphics + motion */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes drift{from{transform:translateX(-80px)}to{transform:translateX(420px)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes ping{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 7px transparent}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes fall{to{transform:translateY(110vh) rotate(600deg)}}
+@keyframes sunrise{from{transform:translateY(46px);opacity:0}to{transform:none;opacity:1}}
+.panel,.room,.item{animation:rise .55s both}
+.hero{position:relative;overflow:hidden;border-radius:22px;padding:28px;min-height:240px;color:#fff;background:linear-gradient(165deg,var(--sky1,#4aa3c7),var(--sky2,#1f6f6b));display:grid;grid-template-columns:1fr minmax(210px,320px);gap:18px;align-items:end;animation:rise .6s both}
+.hero.morning{--sky1:#f6a56b;--sky2:#b9492a}.hero.day{--sky1:#4aa3c7;--sky2:#1f6f6b}.hero.evening{--sky1:#5b3d7a;--sky2:#241a45}
+.hero p{color:rgba(255,255,255,.9)}.hero .chip{background:rgba(255,255,255,.17);backdrop-filter:blur(4px)}.hero .chip span{color:rgba(255,255,255,.88)}
+.eyebrow{display:block;font-size:.76rem;letter-spacing:.15em;text-transform:uppercase;opacity:.85;margin-bottom:6px}
+.scene{position:relative;align-self:end;min-height:150px}.scene svg,#lbld svg{width:100%;height:auto;display:block;animation:rise .9s .2s both}
+.orb{position:absolute;right:6px;top:-6px;width:44px;height:44px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 38px 12px rgba(255,233,168,.55);animation:sunrise 1.4s both,bob 6s 1.4s infinite}
+.hero.evening .orb{background:#f4f1ff;box-shadow:0 0 28px 8px rgba(220,215,255,.5)}
+.cloud{position:absolute;height:14px;width:60px;border-radius:99px;background:rgba(255,255,255,.5);animation:drift 26s linear infinite;pointer-events:none}
+.win{fill:#2a2018}.win.lit{fill:#ffd470;animation:twinkle 3.4s infinite}
+.lhero{position:relative;overflow:hidden}.lhero h1,.lhero p{position:relative;z-index:1}
+#lbld{position:absolute;right:5%;bottom:0;width:min(46%,300px)}
+.ic{position:absolute;right:10px;top:10px;color:var(--teal);opacity:.6}.room{position:relative}
+.room.Deluxe .ic{color:var(--warn)}.room.Suite .ic{color:var(--brand)}
+.st.f:before{animation:ping 2.2s infinite}
+button{transition:transform .15s,filter .15s}button:active{transform:scale(.96)}
+.item{transition:background .2s}.item:hover{background:var(--soft)}
+#toast{transform:translate(-50%,16px);transition:opacity .25s,transform .25s}#toast.show{transform:translate(-50%,0)}
+dialog[open]{animation:pop .3s both}.okic{display:block;margin:0 auto 6px}
+.empty svg{display:block;margin:0 auto 8px;animation:bob 4s infinite}
+.cf{position:fixed;top:-16px;width:8px;height:13px;border-radius:2px;z-index:99;pointer-events:none;animation:fall 2s ease-in forwards}
+@media(max-width:860px){.hero{grid-template-columns:1fr}.scene{max-width:300px}}
+@media(max-width:760px){#lbld{width:130px}}
+@media(prefers-reduced-motion:reduce){*,*:before{animation:none!important;transition:none!important}}
+/* v5: customer accounts */
+.tabs{display:flex;gap:6px}.tabs button{flex:1;background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 12px;font-size:.92rem}
+.tabs button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.lbox form{display:grid;gap:12px}.lbox form[hidden]{display:none}
+/* v6: manager view */
+.badge{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--brand);color:#fff;border-radius:99px;padding:3px 10px}
+.item.click{cursor:pointer}.item.click:hover .nm{color:var(--brand)}
+.srch{margin-bottom:12px}.stat2{color:var(--muted);font-size:.86rem}
+.amt small{display:block;font-weight:400;color:var(--muted);font-size:.76rem}
+.cols.solo{grid-template-columns:1fr}
+</style>
+</head>
+<body>
+<section id="login">
+  <div class="lhero"><span class="cloud" style="top:10%;left:0"></span><span class="cloud" style="top:24%;animation-delay:-13s;width:44px"></span><div id="lbld"></div><h1>Your room is waiting.</h1><p>Create a free account, pick your dates and book your stay in a minute.</p></div>
+  <div class="lform"><div class="lbox">
+    <div class="tabs"><button type="button" data-t="in" class="on">Sign in</button><button type="button" data-t="up">Create account</button><button type="button" data-t="ad">Admin</button></div>
+    <form id="inForm">
+      <h2>Welcome back</h2>
+      <div><label for="user">Username</label><input id="user" autocomplete="username"></div>
+      <div><label for="pass">Password</label><input id="pass" type="password" autocomplete="current-password"></div>
+      <button id="loginBtn" type="submit">Sign in</button>
+    </form>
+    <form id="upForm" hidden>
+      <h2>Join Grand Stay</h2><p class="hint">Choose your own username and password. You'll be signed in straight away.</p>
+      <div><label for="rn">Full name</label><input id="rn" maxlength="40" autocomplete="name"></div>
+      <div><label for="rp">Phone number</label><input id="rp" inputmode="tel" maxlength="15" autocomplete="tel"></div>
+      <div><label for="ru">Choose a username</label><input id="ru" maxlength="20" autocomplete="username"></div>
+      <div><label for="rw">Choose a password</label><input id="rw" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
+      <div><label for="rw2">Confirm password</label><input id="rw2" type="password" autocomplete="new-password"></div>
+      <button type="submit">Create my account</button>
+    </form>
+    <form id="adForm" hidden>
+      <h2>Admin login</h2><p class="hint">For hotel managers. See every customer and booking.</p>
+      <div><label for="adUser">Admin username</label><input id="adUser" autocomplete="username"></div>
+      <div><label for="adPass">Admin password</label><input id="adPass" type="password" autocomplete="current-password"></div>
+      <button type="submit">Sign in as admin</button>
+    </form>
+    <p class="err" id="loginErr"></p>
+  </div></div>
+</section>
+
+<div id="app" hidden>
+<div class="top"><span class="serif brand">Grand Stay</span>
+  <div class="who"><span class="badge" id="roleBadge" hidden>Manager</span><span class="av" id="av"></span><span id="who"></span><button class="sm line" id="logout">Log out</button></div></div>
+<main>
+  <section class="hero" id="hero"><div><small class="eyebrow" id="eyebrow"></small><h1 id="hello"></h1><p id="sub"></p><div class="chips" id="chips"></div></div>
+    <div class="scene"><span class="orb"></span><span class="cloud" style="top:14px;left:0"></span><span class="cloud" style="top:48px;animation-delay:-12s;width:42px"></span><div id="bld"></div></div></section>
+
+  <div class="cols">
+    <section class="panel">
+      <h2>Our rooms</h2><p class="sub">Tap a free room to start a booking for that date.</p>
+      <div class="ctl">
+        <div><label for="viewDate">Looking at</label><input id="viewDate" type="date"></div>
+        <div><label for="filter">Show</label><select id="filter"><option value="all">Every room</option><option value="free">Only free rooms</option></select></div>
+      </div>
+      <div class="rooms" id="rooms"></div>
+    </section>
+
+    <section class="panel" id="bookPanel">
+      <h2>Book a stay</h2><p class="sub">Who's coming, and for how long?</p>
+      <div class="fg">
+        <div><label for="guest">Guest name</label><input id="guest" maxlength="40" placeholder="e.g. Asha Rao"></div>
+        <div><label for="phone">Phone number</label><input id="phone" inputmode="tel" maxlength="15" placeholder="So we can reach them"></div>
+        <div class="two">
+          <div><label for="ci">Arriving</label><input id="ci" type="date"></div>
+          <div><label for="nights">Nights</label><input id="nights" type="number" min="1" max="30" value="1"></div>
+        </div>
+        <div><label for="room">Room</label><select id="room"></select></div>
+        <p class="quote" id="quote"></p>
+        <button id="bookBtn">Confirm booking</button>
+      </div>
+    </section>
+  </div>
+
+  
+
+  <section class="panel" id="custPanel" hidden>
+    <div class="hd"><div><h2>Customers</h2><p class="sub" id="custSub"></p></div></div>
+    <div id="custList"></div>
+  </section>
+
+  <section class="panel">
+    <div class="hd"><div><h2 id="listTitle">Your bookings</h2><p class="sub" id="listSub"></p></div>
+      <div class="seg"><button data-f="active" class="on">Staying / upcoming</button><button data-f="all">Everything</button></div></div>
+    <div class="srch" id="qWrap" hidden><label for="q">Search all bookings</label><input id="q" placeholder="Guest, username, phone, room or booking ID"></div>
+    <div id="list"></div>
+  </section>
+</main>
+</div>
+
+<dialog id="billDlg"><svg class="okic" viewBox="0 0 52 52" width="58" height="58"><circle cx="26" cy="26" r="23" fill="none" stroke="var(--ok)" stroke-width="3" stroke-dasharray="145" stroke-dashoffset="145" style="animation:draw .7s .1s forwards"/><path d="M15 27l8 8 14-16" fill="none" stroke="var(--ok)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="40" stroke-dashoffset="40" style="animation:draw .5s .7s forwards"/></svg><h2 id="billHi" style="text-align:center"></h2><p class="sub">Here's the bill for the stay.</p><div class="bill" id="bill"></div><br><button id="closeBill">Done</button></dialog>
+<div id="toast" role="status"></div>
+
+<script>
+const GST = 0.12;
+const ROOMS = [];
+for (let i = 101; i <= 105; i++) ROOMS.push({number: i, type: "Standard"});
+for (let i = 201; i <= 204; i++) ROOMS.push({number: i, type: "Deluxe"});
+for (let i = 301; i <= 302; i++) ROOMS.push({number: i, type: "Suite"});
+
+let state = {bookings: [], nextId: 1001, prices: {Standard: 2500, Deluxe: 4000, Suite: 7500}};
+try { const s = localStorage.getItem("grandstay_v2"); if (s) state = JSON.parse(s); } catch (e) {}
+state.users = state.users || {}; state.prices = state.prices || {Standard: 2500, Deluxe: 4000, Suite: 7500};
+const save = () => { try { localStorage.setItem("grandstay_v2", JSON.stringify(state)); } catch (e) {} };
+let user = null, filter = "active";
+
+const $ = id => document.getElementById(id);
+const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+const money = n => "₹" + n.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const todayStr = () => new Date().toLocaleDateString("en-CA");
+const day = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 864e5); };
+const fmt = n => new Date(n * 864e5).toLocaleDateString("en-IN", {weekday: "short", day: "numeric", month: "short", timeZone: "UTC"});
+const dstr = n => new Date(n * 864e5).toISOString().slice(0, 10);
+const roomOf = no => ROOMS.find(r => r.number === no);
+const priceOf = r => state.prices[r.type];
+const clash = (no, s, e) => state.bookings.some(b => b.room === no && b.status === "ACTIVE" && b.start < e && s < b.start + b.nights);
+const pl = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+const hue = s => [...s].reduce((a, c) => a + c.charCodeAt(0) * 7, 0) % 360;
+const avatar = (name, size) => { const a = h("span", "av", name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase()); a.style.background = "hsl(" + hue(name) + " 42% 42%)"; if (size) { a.style.width = a.style.height = size + "px"; } return a; };
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove("show"), 3000); }
+
+// ---------- graphics + motion helpers ----------
+const SVGA = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">';
+const ICONS = {
+  Standard: SVGA + '<path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="1.6"/></svg>',
+  Deluxe: SVGA + '<path d="M3 19V9M3 15h14v4M17 15v-2a3 3 0 0 0-3-3H9v5"/><circle cx="6.5" cy="12" r="1.5"/><path d="M20 3v5M17.5 5.5h5"/></svg>',
+  Suite: SVGA + '<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>'
+};
+function buildingSVG(isLit) {
+  const pos = {1: [45, 90, 135, 180, 225], 2: [54, 108, 162, 216], 3: [90, 180]}, ys = {1: 144, 2: 98, 3: 52};
+  let w = "";
+  ROOMS.forEach((r, i) => {
+    const f = Math.floor(r.number / 100), x = pos[f][r.number % 100 - 1], lit = isLit(r.number);
+    w += '<rect class="win' + (lit ? " lit" : "") + '" style="animation-delay:-' + (i * 0.7) + 's" x="' + x + '" y="' + ys[f] + '" width="30" height="30" rx="3"><title>Room ' + r.number + (lit ? ": occupied" : ": free") + "</title></rect>";
+  });
+  return '<svg viewBox="0 0 300 192" role="img" aria-label="Hotel building: lit windows are occupied rooms"><rect x="22" y="14" width="256" height="16" rx="4" fill="#c4562f"/><text x="150" y="26" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Fraunces,Georgia,serif" letter-spacing="2">GRAND STAY</text><rect x="30" y="30" width="240" height="154" fill="#4a2f22"/>' + w + '<rect x="0" y="184" width="300" height="8" fill="#2a1d15"/></svg>';
+}
+function countUp(el, to, f) {
+  const t0 = performance.now();
+  (function step(t) { const p = Math.min(1, (t - t0) / 700); el.textContent = f(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); })(t0);
+}
+function confetti() {
+  const cols = ["#c4562f", "#1f6f6b", "#e9b44c", "#5cc58a", "#ff7a6b"];
+  for (let i = 0; i < 30; i++) {
+    const c = h("i", "cf"); c.style.left = Math.random() * 100 + "vw"; c.style.background = cols[i % cols.length];
+    c.style.animationDuration = 1.3 + Math.random() * 1.2 + "s"; c.style.animationDelay = Math.random() * 0.3 + "s";
+    document.body.appendChild(c); setTimeout(() => c.remove(), 3000);
+  }
+}
+$("lbld").innerHTML = buildingSVG(no => (no * 7) % 3 !== 0);
+
+// ---------- customer accounts ----------
+const SESSION_KEY = "grandstay_session";
+// Manager account (one fixed login). Only a salted hash is stored here, never the password itself.
+const ADMIN = {user: "admin", salt: "gs-mgr-4c71e9", hashes: ["914f791f2fbe8f82b475f0a8eb3eebdefe5b030cb4a05fcbdae93a72c30bbd46", "x1258f7e9"]};
+async function hashPw(salt, pw) {
+  const text = salt + ":" + pw;
+  try {
+    if (window.crypto && crypto.subtle) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, "0")).join("");
+    }
+  } catch (e) {}
+  let a = 5381; for (const c of text) a = ((a << 5) + a + c.charCodeAt(0)) | 0;
+  return "x" + (a >>> 0).toString(16);
+}
+const newSalt = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+function setMode(admin) {
+  $("bookPanel").hidden = admin; $("custPanel").hidden = !admin; $("qWrap").hidden = !admin; $("roleBadge").hidden = !admin;
+  $("listTitle").textContent = admin ? "All bookings" : "Your bookings";
+  document.querySelector(".cols").classList.toggle("solo", admin);
+  $("q").value = "";
+}
+
+function enterAdmin() {
+  user = {username: ADMIN.user, name: "Manager", label: "Manager", phone: "", isAdmin: true};
+  setMode(true); // manager sessions are never remembered on the device
+  $("loginErr").textContent = ""; ["pass", "rw", "rw2", "adUser", "adPass"].forEach(i => $(i).value = "");
+  $("login").hidden = true; $("app").hidden = false;
+  $("who").textContent = "Manager";
+  const av = avatar("Manager"); $("av").replaceWith(av); av.id = "av";
+  $("viewDate").value = todayStr(); filter = "all";
+  document.querySelectorAll(".seg button").forEach(x => x.classList.toggle("on", x.dataset.f === "all"));
+  render();
+  toast("Welcome, Manager. Every booking and customer is listed below.");
+}
+
+function enter(username) {
+  const acc = state.users[username];
+  user = {username, name: acc.name, label: acc.name.split(" ")[0], phone: acc.phone, isAdmin: false};
+  try { localStorage.setItem(SESSION_KEY, username); } catch (e) {}
+  setMode(false);
+  $("loginErr").textContent = ""; ["pass", "rw", "rw2", "adUser", "adPass"].forEach(i => $(i).value = "");
+  $("login").hidden = true; $("app").hidden = false;
+  $("who").textContent = acc.name;
+  const av = avatar(acc.name); $("av").replaceWith(av); av.id = "av";
+  $("viewDate").value = $("ci").value = todayStr(); $("ci").min = todayStr();
+  $("guest").value = acc.name; $("phone").value = acc.phone;
+  render();
+  toast("Welcome, " + user.label + "!");
+}
+
+$("inForm").onsubmit = async e => {
+  e.preventDefault();
+  const u = $("user").value.trim().toLowerCase(), acc = state.users[u];
+  if (!acc || acc.hash !== await hashPw(acc.salt, $("pass").value)) { $("loginErr").textContent = "That username and password don't match. Please try again."; return; }
+  enter(u);
+};
+
+$("upForm").onsubmit = async e => {
+  e.preventDefault();
+  const name = $("rn").value.trim(), phone = $("rp").value.trim(), u = $("ru").value.trim().toLowerCase(), pw = $("rw").value, err = $("loginErr");
+  if (name.length < 2) { err.textContent = "Please tell us your name."; return; }
+  if (!/^[0-9+\- ]{7,15}$/.test(phone)) { err.textContent = "That phone number doesn't look right."; return; }
+  if (!/^[a-z0-9_.]{3,20}$/.test(u)) { err.textContent = "Usernames use 3-20 letters, numbers, dots or underscores."; return; }
+  if (u === ADMIN.user || state.users[u]) { err.textContent = "That username is taken. Try another."; return; }
+  if (pw.length < 6) { err.textContent = "Your password needs at least 6 characters."; return; }
+  if (pw !== $("rw2").value) { err.textContent = "The two passwords don't match."; return; }
+  const salt = newSalt();
+  state.users[u] = {name, phone, salt, hash: await hashPw(salt, pw), joined: Date.now()};
+  save(); enter(u);
+};
+
+$("adForm").onsubmit = async e => {
+  e.preventDefault();
+  const u = $("adUser").value.trim().toLowerCase();
+  if (u !== ADMIN.user || !ADMIN.hashes.includes(await hashPw(ADMIN.salt, $("adPass").value))) { $("loginErr").textContent = "That admin username and password don't match."; return; }
+  enterAdmin();
+};
+
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  $("inForm").hidden = b.dataset.t !== "in"; $("upForm").hidden = b.dataset.t !== "up"; $("adForm").hidden = b.dataset.t !== "ad"; $("loginErr").textContent = "";
+});
+
+$("logout").onclick = () => {
+  user = null; try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+  $("app").hidden = true; $("login").hidden = false; $("user").value = ""; $("pass").value = "";
+  setMode(false);
+};
+
+// ---------- rendering ----------
+function fillRooms() {
+  const sel = $("room"), prev = sel.value, n = parseInt($("nights").value, 10) || 0, ci = $("ci").value;
+  sel.innerHTML = "";
+  if (ci && n > 0) {
+    const s = day(ci);
+    ROOMS.filter(r => !clash(r.number, s, s + n)).forEach(r => {
+      const o = h("option", "", "Room " + r.number + " · " + r.type + " · ₹" + priceOf(r) + "/night"); o.value = r.number; sel.appendChild(o);
+    });
+  }
+  if (prev) sel.value = prev;
+  $("bookBtn").disabled = !sel.options.length;
+  const r = roomOf(Number(sel.value));
+  $("quote").textContent = r && n > 0 ? pl(n, "night") + " in room " + r.number + ", leaving " + fmt(day(ci) + n) + ". Total with 12% GST: " + money(priceOf(r) * n * (1 + GST)) + "."
+    : (ci && n > 0 ? "Sorry, every room is taken on those dates. Try different dates." : "Pick an arrival date and number of nights.");
+}
+
+function pick(no) {
+  const vd = $("viewDate").value;
+  $("ci").value = day(vd) < day(todayStr()) ? todayStr() : vd;
+  fillRooms(); $("room").value = no; fillRooms();
+  $("bookPanel").scrollIntoView({behavior: "smooth", block: "center"});
+  $("guest").focus({preventScroll: true});
+}
+
+function render() {
+  if (!user) return;
+  const today = day(todayStr()), vd = $("viewDate").value || todayStr(), d = day(vd);
+  const mine = user.isAdmin ? state.bookings : state.bookings.filter(b => b.owner === user.username), act = mine.filter(b => b.status === "ACTIVE");
+  const freeTonight = ROOMS.filter(r => !clash(r.number, today, today + 1)).length;
+  const hr = new Date().getHours();
+  $("hero").className = "hero " + (hr >= 5 && hr < 11 ? "morning" : hr >= 11 && hr < 17 ? "day" : "evening");
+  $("eyebrow").textContent = new Date().toLocaleDateString("en-IN", {weekday: "long", day: "numeric", month: "long"});
+  $("hello").textContent = (hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening") + ", " + user.label + ".";
+  const nx = act.filter(b => b.start >= today).sort((a, b) => a.start - b.start)[0];
+  const custs = Object.keys(state.users);
+  if (user.isAdmin) {
+    const arr = act.filter(b => b.start === today).length, dep = act.filter(b => b.start + b.nights === today).length;
+    $("sub").textContent = pl(custs.length, "customer") + ", " + pl(state.bookings.length, "booking") + " on record. " + freeTonight + " of " + ROOMS.length + " rooms are free tonight, " + arr + " arriving and " + dep + " leaving today.";
+  } else $("sub").textContent = freeTonight + " of " + ROOMS.length + " rooms are free tonight. " + (nx ? "Your next stay: room " + nx.room + ", arriving " + fmt(nx.start) + "." : "You have no upcoming stays yet. Pick a room below to book one.");
+
+  const busyCount = ROOMS.filter(r => clash(r.number, d, d + 1)).length;
+  const I = x => Math.round(x), earned = mine.filter(b => b.status === "CHECKED-OUT").reduce((s, b) => s + b.total, 0);
+  const chips = user.isAdmin
+    ? [[custs.length, "Customers", I], [state.bookings.length, "Bookings in total", I], [act.length, "Active now", I], [earned, "Earned from completed stays", money], [busyCount, "Rooms occupied on " + fmt(d), I]]
+    : [[ROOMS.length - busyCount, "Free on " + fmt(d), I], [busyCount, "Occupied on " + fmt(d), I], [act.length, "Your bookings", I], [earned, "Spent on past stays", money]];
+  $("chips").innerHTML = "";
+  chips.forEach(([v, l, f]) => { const c = h("div", "chip"), b = h("b", "", f(0)); c.append(b, h("span", "", l)); $("chips").appendChild(c); countUp(b, v, f); });
+  $("bld").innerHTML = buildingSVG(no => clash(no, d, d + 1));
+
+  const onlyFree = $("filter").value === "free";
+  $("rooms").innerHTML = "";
+  ROOMS.filter(r => !onlyFree || !clash(r.number, d, d + 1)).forEach((r, i) => {
+    const busy = clash(r.number, d, d + 1);
+    const clickable = !busy && !user.isAdmin;
+    const e = h(clickable ? "button" : "div", "room " + r.type + (clickable ? " free" : ""));
+    e.style.animationDelay = i * 45 + "ms"; const ic = h("span", "ic"); ic.innerHTML = ICONS[r.type]; e.appendChild(ic);
+    e.append(h("span", "no", r.number), h("small", "", r.type + " · ₹" + priceOf(r)), h("span", "st " + (busy ? "b" : "f"), busy ? "Occupied" : "Free"));
+    if (clickable) e.onclick = () => pick(r.number);
+    $("rooms").appendChild(e);
+  });
+
+  fillRooms();
+
+  const q = user.isAdmin ? $("q").value.trim().toLowerCase() : "";
+  const hit = b => !q || [b.guest, b.owner || "", b.phone || "", String(b.room), String(b.id)].some(x => x.toLowerCase().includes(q));
+  const items = [...mine].reverse().filter(b => (filter === "all" || b.status === "ACTIVE") && hit(b));
+  if (user.isAdmin) renderCustomers(q);
+  $("listSub").textContent = items.length ? pl(items.length, "booking") + (filter === "all" ? " in total." : " to look after.") : "";
+  const list = $("list"); list.innerHTML = "";
+  if (!items.length) { const em = h("div", "empty"); em.innerHTML = '<svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/><path d="M16 4v3M14.5 5.5h3"/></svg>'; em.appendChild(h("span", "", filter === "all" ? (user.isAdmin ? "Nothing matches yet. Bookings from every customer will appear here." : "Nothing here yet. Your first booking will show up here.") : (user.isAdmin ? "No active bookings right now." : "You have no upcoming stays. Book a room to get started."))); list.appendChild(em); }
+  items.forEach((b, i) => {
+    const it = h("div", "item"), mid = h("div", "mid"); it.style.animationDelay = Math.min(i, 8) * 50 + "ms";
+    mid.append(h("div", "nm", b.guest), h("div", "meta", "Room " + b.room + " · " + fmt(b.start) + " → " + fmt(b.start + b.nights) + " (" + pl(b.nights, "night") + ")" + (user.isAdmin ? " · " + (b.owner ? "@" + b.owner : "walk-in") + " · " + (b.phone || "no phone") + " · ID " + b.id : "")));
+    it.append(avatar(b.guest, 40), mid, h("span", "pill " + b.status, b.status === "ACTIVE" ? "Booked" : b.status === "CANCELLED" ? "Cancelled" : "Checked out"), h("span", "amt", money(b.total)));
+    if (b.status === "ACTIVE") {
+      const c = h("button", "sm no", "Cancel"), o = h("button", "sm ok", "Check out");
+      c.onclick = () => cancelBooking(b.id); o.onclick = () => checkout(b.id);
+      const box = h("div"); box.style.cssText = "display:flex;gap:8px"; box.append(c, o); it.appendChild(box);
+    }
+    list.appendChild(it);
+  });
+}
+
+function renderCustomers(q) {
+  const list = $("custList"); list.innerHTML = "";
+  const rows = Object.entries(state.users).map(([u, a]) => {
+    const bs = state.bookings.filter(b => b.owner === u);
+    return {u, a, n: bs.length, active: bs.filter(b => b.status === "ACTIVE").length, spent: bs.filter(b => b.status === "CHECKED-OUT").reduce((s, b) => s + b.total, 0)};
+  }).filter(r => !q || [r.a.name, r.u, r.a.phone].some(x => x.toLowerCase().includes(q))).sort((x, y) => (y.a.joined || 0) - (x.a.joined || 0));
+  $("custSub").textContent = pl(Object.keys(state.users).length, "customer") + " registered. Tap a customer to see only their bookings.";
+  if (!rows.length) { list.appendChild(h("div", "empty", q ? "No customers match that search." : "No customers have signed up yet.")); return; }
+  rows.forEach((r, i) => {
+    const it = h("div", "item click"), mid = h("div", "mid"); it.style.animationDelay = Math.min(i, 8) * 40 + "ms";
+    mid.append(h("div", "nm", r.a.name), h("div", "meta", "@" + r.u + " · " + r.a.phone + (r.a.joined ? " · joined " + new Date(r.a.joined).toLocaleDateString("en-IN", {day: "numeric", month: "short"}) : "")));
+    const amt = h("span", "amt", money(r.spent)); amt.appendChild(h("small", "", pl(r.n, "booking") + (r.active ? ", " + r.active + " active" : "")));
+    it.append(avatar(r.a.name, 40), mid, amt);
+    it.onclick = () => { $("q").value = r.u; render(); $("list").scrollIntoView({behavior: "smooth", block: "start"}); };
+    list.appendChild(it);
+  });
+}
+
+// ---------- actions ----------
+$("bookBtn").onclick = () => {
+  const guest = $("guest").value.trim(), phone = $("phone").value.trim();
+  const room = Number($("room").value), nights = parseInt($("nights").value, 10), ci = $("ci").value;
+  if (!guest) return toast("What's the guest's name?");
+  if (!/^[0-9+\- ]{7,15}$/.test(phone)) return toast("That phone number doesn't look right.");
+  if (!ci || day(ci) < day(todayStr())) return toast("Arrival can't be in the past.");
+  if (!(nights >= 1 && nights <= 30)) return toast("Stays can be 1 to 30 nights.");
+  const s = day(ci);
+  if (clash(room, s, s + nights)) return toast("Someone got that room first. Pick another.");
+  const total = priceOf(roomOf(room)) * nights * (1 + GST);
+  state.bookings.push({id: state.nextId, guest, phone, room, start: s, nights, total, status: "ACTIVE", by: user.label, owner: user.username});
+  state.nextId++; save();
+  confetti(); toast("All set! Room " + room + " is " + guest.split(" ")[0] + "'s from " + fmt(s) + ".");
+  $("guest").value = user.name; $("phone").value = user.phone; $("nights").value = 1;
+  render();
+};
+
+function cancelBooking(id) {
+  const b = state.bookings.find(x => x.id === id);
+  if (!b || b.status !== "ACTIVE" || (!user.isAdmin && b.owner !== user.username)) return;
+  b.status = "CANCELLED"; save(); render();
+  toast("Cancelled " + b.guest.split(" ")[0] + "'s booking. Room " + b.room + " is free again.");
+}
+
+function checkout(id) {
+  const b = state.bookings.find(x => x.id === id);
+  if (!b || b.status !== "ACTIVE" || (!user.isAdmin && b.owner !== user.username)) return;
+  const r = roomOf(b.room), base = b.total / (1 + GST);
+  b.status = "CHECKED-OUT"; save();
+  $("billHi").textContent = "Thanks for staying, " + b.guest.split(" ")[0] + "!";
+  const rows = [["Room", b.room + " (" + r.type + ")"], ["Stay", fmt(b.start) + " to " + fmt(b.start + b.nights)], ["Nights", b.nights], ["Room charge", money(base)], ["GST (12%)", money(base * GST)]];
+  $("bill").innerHTML = "";
+  rows.forEach(([k, v]) => { const d = h("div"); d.append(h("span", "", k), h("span", "", v)); $("bill").appendChild(d); });
+  const t = h("div", "t"); t.append(h("span", "", "Total"), h("span", "", money(b.total))); $("bill").appendChild(t);
+  $("billDlg").showModal(); render();
+}
+
+$("closeBill").onclick = () => $("billDlg").close();
+document.querySelectorAll(".seg button").forEach(btn => btn.onclick = () => {
+  filter = btn.dataset.f; document.querySelectorAll(".seg button").forEach(x => x.classList.toggle("on", x === btn)); render();
+});
+$("filter").onchange = render; $("viewDate").onchange = render; $("q").oninput = render;
+$("ci").onchange = fillRooms; $("nights").oninput = fillRooms; $("room").onchange = fillRooms;
+try { const sv = localStorage.getItem(SESSION_KEY); if (sv && state.users[sv]) enter(sv); } catch (e) {}
+</script>
+</body>
+</html>
